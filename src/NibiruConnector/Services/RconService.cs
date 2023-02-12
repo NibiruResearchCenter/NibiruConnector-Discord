@@ -24,7 +24,6 @@ public class RconService : IRconService
         Connected,
     }
     
-    
     private readonly RCON _rcon;
     private RconStatus _rconStatus;
 
@@ -36,10 +35,10 @@ public class RconService : IRconService
         _rcon = new RCON(
             IPAddress.Parse(options.Value.IpAddress),
             (ushort)options.Value.Port,
-            options.Value.Password);  // Inject Options
+            options.Value.Password);
         _rcon.OnPacketReceived += OnRconPacketReceived;
         _rcon.OnDisconnected += OnRconDisconnected;
-        
+
         Connect().ConfigureAwait(false).GetAwaiter().GetResult();
     }
     
@@ -78,6 +77,6 @@ public class RconService : IRconService
     private void OnRconDisconnected()
     {
         _logger.LogInformation("RCON disconnected.");
-        Connect().ConfigureAwait(false).GetAwaiter().GetResult();
+        _rconStatus = RconStatus.Disconnected;
     }
 }
