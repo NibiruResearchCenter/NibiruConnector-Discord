@@ -7,5 +7,5 @@ namespace NibiruConnector.Interfaces;
 
 public interface IRconService
 {
-    public Task<string> SendCommand(string command);
+    public Task<string> SendCommand(string command, bool keepMinecraftFormatting = false);
 }

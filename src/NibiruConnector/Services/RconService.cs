@@ -9,6 +9,7 @@ using CoreRCON.PacketFormats;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NibiruConnector.Exceptions;
+using NibiruConnector.Extensions;
 using NibiruConnector.Interfaces;
 using NibiruConnector.Options;
 
@@ -42,20 +43,19 @@ public class RconService : IRconService
         Connect().ConfigureAwait(false).GetAwaiter().GetResult();
     }
     
-    public async Task<string> SendCommand(string command)
+    public async Task<string> SendCommand(string command, bool keepMinecraftFormatting = false)
     {
-        if (_rconStatus != RconStatus.Disconnected)
-        {
-            return await _rcon.SendCommandAsync(command);
-        }
-
-        await Connect();
         if (_rconStatus == RconStatus.Disconnected)
         {
-            throw new RconException("RCON connection failed.");
+            await Connect();
+            if (_rconStatus == RconStatus.Disconnected)
+            {
+                throw new RconException("RCON connection failed.");
+            }
         }
 
-        return await _rcon.SendCommandAsync(command);
+        var response = await _rcon.SendCommandAsync(command) ?? string.Empty;
+        return keepMinecraftFormatting ? response : response.RemoveMinecraftFormatting();
     }
     
     private async Task Connect()
