@@ -4,16 +4,48 @@
 // 
 
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NibiruConnector.Attributes;
 using NibiruConnector.Interfaces;
+using NibiruConnector.Options;
 using NibiruConnector.Services;
 using Remora.Commands.Extensions;
+using Serilog;
 
 namespace NibiruConnector;
 
 public static class Initializer
 {
+    public static void InitializeLogger()
+    {
+        var loggerConfiguration = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .WriteTo.Console();
+
+        if (Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") == "Development")
+        {
+            loggerConfiguration.MinimumLevel.Verbose();
+        }
+        else
+        {
+            loggerConfiguration.MinimumLevel.Information();
+        }
+
+        Log.Logger = loggerConfiguration.CreateLogger();
+    }
+    
+    public static void InitializeConfiguration(this IConfigurationBuilder builder)
+    {
+        builder.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
+        {
+            new("Discord:Token", Environment.GetEnvironmentVariable("DISCORD_TOKEN")),
+            new("Rcon:IpAddress", Environment.GetEnvironmentVariable("RCON_IP_ADDRESS")),
+            new("Rcon:Port", Environment.GetEnvironmentVariable("RCON_PORT")),
+            new("Rcon:Password", Environment.GetEnvironmentVariable("RCON_PASSWORD")),
+        });
+    }
+    
     public static IServiceCollection AddDiscordCommandTrees(this IServiceCollection services)
     {
         var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -36,6 +68,14 @@ public static class Initializer
     {
         services.AddSingleton<IRconService, RconService>();
         
+        return services;
+    }
+
+    public static IServiceCollection AddNibiruOptions(this IServiceCollection services)
+    {
+        services.AddOptions<DiscordOptions>().BindConfiguration("Discord");
+        services.AddOptions<RconOptions>().BindConfiguration("Rcon");
+
         return services;
     }
 }

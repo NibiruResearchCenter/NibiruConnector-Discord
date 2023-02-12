@@ -7,8 +7,10 @@ using System.Net;
 using CoreRCON;
 using CoreRCON.PacketFormats;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NibiruConnector.Exceptions;
 using NibiruConnector.Interfaces;
+using NibiruConnector.Options;
 
 namespace NibiruConnector.Services;
 
@@ -26,12 +28,15 @@ public class RconService : IRconService
     private readonly RCON _rcon;
     private RconStatus _rconStatus;
 
-    public RconService(ILogger<RconService> logger)
+    public RconService(ILogger<RconService> logger, IOptions<RconOptions> options)
     {
         _logger = logger;
 
         _rconStatus = RconStatus.Disconnected;
-        _rcon = new RCON(IPAddress.Parse("127.0.0.1"), 12345, "");  // Inject Options
+        _rcon = new RCON(
+            IPAddress.Parse(options.Value.IpAddress),
+            (ushort)options.Value.Port,
+            options.Value.Password);  // Inject Options
         _rcon.OnPacketReceived += OnRconPacketReceived;
         _rcon.OnDisconnected += OnRconDisconnected;
         

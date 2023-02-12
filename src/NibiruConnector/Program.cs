@@ -6,30 +6,35 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NibiruConnector;
+using NibiruConnector.Interfaces;
+using NibiruConnector.Options;
 using Remora.Discord.Commands.Extensions;
 using Remora.Discord.Commands.Services;
 using Remora.Discord.Hosting.Extensions;
 using Remora.Rest.Core;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Verbose()
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .CreateLogger();
+Initializer.InitializeLogger();
 
 var builder = Host.CreateDefaultBuilder();
 
+builder.ConfigureAppConfiguration(configurationBuilder =>
+{
+    configurationBuilder.InitializeConfiguration();
+});
+
 builder.AddDiscordService(services =>
 {
-    // Inject Options
-    return "";
+    var discordOptions = services.GetRequiredService<IOptions<DiscordOptions>>();
+    return discordOptions.Value.Token;
 });
 
 builder.ConfigureServices((_, services) =>
 {
     services.AddOptions();
+    services.AddNibiruOptions();
     services.AddNibiruServices();
     services.AddDiscordCommands(enableSlash: true);
     services.AddDiscordCommandTrees();
@@ -45,6 +50,7 @@ builder.UseSerilog();
 var app = builder.Build();
 
 var slashService = app.Services.GetRequiredService<SlashService>();
+var _ = app.Services.GetRequiredService<IRconService>();
 var updateSlash = await slashService.UpdateSlashCommandsAsync(new Snowflake(1074046319469011084));
 if (!updateSlash.IsSuccess)
 {
