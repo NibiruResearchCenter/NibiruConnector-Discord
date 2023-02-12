@@ -44,28 +44,33 @@ public class RconService : IRconService
     
     public async Task<string> SendCommand(string command)
     {
-        var checkTimes = 0;
-        while (_rconStatus == RconStatus.Disconnected && checkTimes <= 3)
+        if (_rconStatus != RconStatus.Disconnected)
         {
-            checkTimes++;
-            _logger.LogInformation("RCON is disconnected, waiting for reconnect... ({CheckTimes}/3)", checkTimes);
-            await Task.Delay(1000);
-
-            if (_rconStatus == RconStatus.Disconnected && checkTimes == 3)
-            {
-                throw new RconException("RCON is disconnected.");
-            }
+            return await _rcon.SendCommandAsync(command);
         }
-        
+
+        await Connect();
+        if (_rconStatus == RconStatus.Disconnected)
+        {
+            throw new RconException("RCON connection failed.");
+        }
+
         return await _rcon.SendCommandAsync(command);
     }
     
     private async Task Connect()
     {
         _logger.LogInformation("RCON connecting...");
-        await _rcon.ConnectAsync();
-        _rconStatus = RconStatus.Connected;
-        _logger.LogInformation("RCON connected.");
+        try
+        {
+            await _rcon.ConnectAsync();
+            _rconStatus = RconStatus.Connected;
+            _logger.LogInformation("RCON connected.");
+        }
+        catch (Exception e)
+        {
+            _logger.LogWarning("RCON connection failed: {ExceptionMessage}", e.Message);
+        }
     }
     
     private void OnRconPacketReceived(RCONPacket packet)
