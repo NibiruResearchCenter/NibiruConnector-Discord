@@ -3,5 +3,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="CoreRCON" Version="5.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageVersion Include="Remora.Discord" Version="2023.1.0" />
+    <PackageVersion Include="Serilog.Extensions.Hosting" Version="5.0.1" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="4.1.0" />
   </ItemGroup>
 </Project>
