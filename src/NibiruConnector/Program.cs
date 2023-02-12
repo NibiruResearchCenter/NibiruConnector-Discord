@@ -49,9 +49,11 @@ builder.UseSerilog();
 
 var app = builder.Build();
 
-var slashService = app.Services.GetRequiredService<SlashService>();
 var _ = app.Services.GetRequiredService<IRconService>();
-var updateSlash = await slashService.UpdateSlashCommandsAsync(new Snowflake(1074046319469011084));
+
+var slashService = app.Services.GetRequiredService<SlashService>();
+var discordOptions = app.Services.GetRequiredService<IOptions<DiscordOptions>>();
+var updateSlash = await slashService.UpdateSlashCommandsAsync(new Snowflake(discordOptions.Value.GuildId));
 if (!updateSlash.IsSuccess)
 {
     Log.Warning("Failed to update slash commands: {Reason}", updateSlash.Error.Message);

@@ -8,4 +8,5 @@ namespace NibiruConnector.Options;
 public record DiscordOptions
 {
     public string Token { get; set; } = string.Empty;
+    public ulong GuildId { get; set; } = 0;
 }

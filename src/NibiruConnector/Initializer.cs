@@ -40,6 +40,7 @@ public static class Initializer
         builder.AddInMemoryCollection(new List<KeyValuePair<string, string?>>
         {
             new("Discord:Token", Environment.GetEnvironmentVariable("DISCORD_TOKEN")),
+            new("Discord:GuildId", Environment.GetEnvironmentVariable("DISCORD_GUILD_ID")),
             new("Rcon:IpAddress", Environment.GetEnvironmentVariable("RCON_IP_ADDRESS")),
             new("Rcon:Port", Environment.GetEnvironmentVariable("RCON_PORT")),
             new("Rcon:Password", Environment.GetEnvironmentVariable("RCON_PASSWORD")),
