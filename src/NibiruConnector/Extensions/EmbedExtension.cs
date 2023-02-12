@@ -39,6 +39,18 @@ public static class EmbedExtension
 
         return cer.BuildSuccessCommandEmbed(fields);
     }
+    
+    public static Embed BuildGetGroupEmbed(this CommandExecutionResult<GetGroupResponse> cer)
+    {
+        var failed = cer.Result is null;
+        if (failed)
+        {
+            return cer.BuildFailedCommandEmbed();
+        }
+
+        var groups = string.Join("; ", cer.Result!.Groups);
+        return cer.BuildSuccessCommandEmbed(new EmbedField("Groups", groups));
+    }
 
     private static Embed BuildFailedCommandEmbed<T>(this CommandExecutionResult<T> cer)
     {

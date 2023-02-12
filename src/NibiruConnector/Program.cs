@@ -34,10 +34,11 @@ builder.AddDiscordService(services =>
 builder.ConfigureServices((_, services) =>
 {
     services.AddOptions();
+    services.AddNibiruJobs();
     services.AddNibiruOptions();
     services.AddNibiruServices();
-    services.AddDiscordCommands(enableSlash: true);
     services.AddDiscordCommandTrees();
+    services.AddDiscordAutoCompleteProviders();
 });
 
 builder.ConfigureLogging((_, loggingBuilder) =>

@@ -34,7 +34,7 @@ public sealed class NibiruWhitelistCommand : CommandGroup
     [Description("Add a player to the whitelist.")]
     public async Task<IResult> WhitelistAddAsync(
         [Description("Minecraft player name")] string player,
-        [Description("LuckPerms group name")] string group)
+        [Description("LuckPerms group name"), AutocompleteProvider("autocomplete:groups")] string group)
     {
         var response = await _rconService
             .ExecuteServerCommand<GeneralCommandResponse>($"nibiruc whitelist add {player} {group}");

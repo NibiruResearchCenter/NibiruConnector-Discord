@@ -7,10 +7,13 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NibiruConnector.Attributes;
+using NibiruConnector.Commands.AutoComplete;
 using NibiruConnector.Interfaces;
+using NibiruConnector.Jobs;
 using NibiruConnector.Options;
 using NibiruConnector.Services;
 using Remora.Commands.Extensions;
+using Remora.Discord.Commands.Extensions;
 using Serilog;
 
 namespace NibiruConnector;
@@ -49,6 +52,8 @@ public static class Initializer
     
     public static IServiceCollection AddDiscordCommandTrees(this IServiceCollection services)
     {
+        services.AddDiscordCommands(enableSlash: true);
+        
         var types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(x => x.GetTypes())
             .Where(x => x is { IsClass: true, IsSealed: true })
@@ -65,6 +70,13 @@ public static class Initializer
         return builder.Finish();
     }
 
+    public static IServiceCollection AddDiscordAutoCompleteProviders(this IServiceCollection services)
+    {
+        services.AddAutocompleteProvider<GroupsAutoCompleteProvider>();
+        
+        return services;
+    }
+
     public static IServiceCollection AddNibiruServices(this IServiceCollection services)
     {
         services.AddSingleton<IRconService, RconService>();
@@ -72,6 +84,13 @@ public static class Initializer
         return services;
     }
 
+    public static IServiceCollection AddNibiruJobs(this IServiceCollection services)
+    {
+        services.AddHostedService<DataSyncJobs>();
+        
+        return services;
+    }
+    
     public static IServiceCollection AddNibiruOptions(this IServiceCollection services)
     {
         services.AddOptions<DiscordOptions>().BindConfiguration("Discord");
