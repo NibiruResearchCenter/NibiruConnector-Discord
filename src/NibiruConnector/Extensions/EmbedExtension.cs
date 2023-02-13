@@ -33,11 +33,36 @@ public static class EmbedExtension
 
         var fields = (
                 from pg in cer.Result!.PlayerGroups
-                let playerString = string.Join("; ", pg.Players)
+                let playerString = string.Join("; ", pg.Players
+                    .OrderBy(x => x.DaysSinceLastJoin)
+                    .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))
                 select new EmbedField($"Group: {pg.GroupName}", playerString)
-            ).ToArray();
+            ).ToList();
+        var allPlayers = cer.Result!.PlayerGroups
+            .SelectMany(x => x.Players)
+            .OrderBy(x => x.DaysSinceLastJoin)
+            .ToArray();
 
-        return cer.BuildSuccessCommandEmbed(fields);
+        var neverJoin = allPlayers
+            .Where(x => x.DaysSinceLastJoin < 0);
+
+        var above7Days = allPlayers
+            .Where(x => x.DaysSinceLastJoin >= 7);
+
+        var above30Days = allPlayers
+            .Where(x => x.DaysSinceLastJoin >= 30);
+        
+        fields.Add(new EmbedField("[EXTRA] Never Join",
+            string.Join("; ", neverJoin
+                .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))));
+        fields.Add(new EmbedField("[EXTRA] Above 7 Days",
+            string.Join("; ", above7Days
+                .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))));
+        fields.Add(new EmbedField("[EXTRA] Above 30 Days",
+            string.Join("; ", above30Days
+                .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))));
+        
+        return cer.BuildSuccessCommandEmbed(fields.ToArray());
     }
     
     public static Embed BuildGetGroupEmbed(this CommandExecutionResult<GetGroupResponse> cer)
@@ -62,7 +87,7 @@ public static class EmbedExtension
             Fields = new List<EmbedField>
             {
                 new("Result", "Failed"),
-                new("Time Consumption", cer.TimeConsumption.ToString()),
+                new("Time Consumption", $"{cer.TimeConsumption.ToString()} ms"),
                 new("Message", cer.Response)
             }
         };
@@ -73,7 +98,7 @@ public static class EmbedExtension
         var fields = new List<EmbedField>
         {
             new("Result", "Success"),
-            new("Time Consumption", cer.TimeConsumption.ToString())
+            new("Time Consumption", $"{cer.TimeConsumption.ToString()} ms")
         };
         fields.AddRange(extraFields);
         return new Embed

@@ -13,5 +13,5 @@ public record WhitelistListPlayerGroup
     public string GroupName { get; set; } = string.Empty;
     
     [JsonPropertyName("players")]    
-    public List<string> Players { get; set; } = new();
+    public List<WhitelistListPlayer> Players { get; set; } = new();
 }
