@@ -30,4 +30,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ghcr.io/NibiruResearchCenter/nibiru-connect:${{ github.ref_name }}
+          tags: ghcr.io/nibiruresearchcenter/nibiru-connector:${{ github.ref_name }}
