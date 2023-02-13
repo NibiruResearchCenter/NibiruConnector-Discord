@@ -9,20 +9,30 @@ using Remora.Discord.Commands.Autocomplete;
 
 namespace NibiruConnector.Commands.AutoComplete;
 
-public class GroupsAutoCompleteProvider : IAutocompleteProvider
+public class WhitelistedPlayerAutoCompleteProvider : IAutocompleteProvider
 {
-    private static List<string> s_groups = new();
+    private static List<string> s_whitelistedPlayers = new();
     
-    public static void UpdateGroups(List<string> groups)
+    public static void UpdateWhitelistedPlayers(List<string> whitelistedPlayers)
     {
-        s_groups = groups;
+        s_whitelistedPlayers = whitelistedPlayers;
+    }
+    
+    public static void AddWhitelistedPlayer(string whitelistedPlayer)
+    {
+        s_whitelistedPlayers.Add(whitelistedPlayer);
+    }
+    
+    public static void RemoveWhitelistedPlayer(string whitelistedPlayer)
+    {
+        s_whitelistedPlayers.Remove(whitelistedPlayer);
     }
 
-    public string Identity => AutoCompleteIdentities.GROUPS;
+    public string Identity => AutoCompleteIdentities.WHITELISTED_PLAYERS;
 
     public ValueTask<IReadOnlyList<IApplicationCommandOptionChoice>> GetSuggestionsAsync(IReadOnlyList<IApplicationCommandInteractionDataOption> options, string userInput, CancellationToken ct = new())
     {
-        return new ValueTask<IReadOnlyList<IApplicationCommandOptionChoice>>(s_groups
+        return new ValueTask<IReadOnlyList<IApplicationCommandOptionChoice>>(s_whitelistedPlayers
             .Where(x => x.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
             .Take(25)
             .Select(x => new ApplicationCommandOptionChoice(x, x))

@@ -29,17 +29,52 @@ public class DataSyncJobs : BackgroundService
     {
         do
         {
+            await UpdateGroups();
+            await UpdateWhitelistedPlayers();
+        } while (await _timer.WaitForNextTickAsync(stoppingToken));
+    }
+
+    private async Task UpdateGroups()
+    {
+        try
+        {
             var response = await _rconService
                 .ExecuteServerCommand<GetGroupResponse>("nibiruc fetch groups");
 
             if (response.Result is not null)
             {
-                GroupsAutoCompleteProvider.UpdateGroups(response.Result.Groups.ToArray());
+                GroupsAutoCompleteProvider.UpdateGroups(response.Result.Data);
             }
             else
             {
                 _logger.LogWarning("Failed to sync groups data.");
             }
-        } while (await _timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Caught an Exception {ExceptionName} when sync groups data.", e.GetBaseException().GetType().FullName ?? "Unknown");
+        }
+    }
+    
+    private async Task UpdateWhitelistedPlayers()
+    {
+        try
+        {
+            var response = await _rconService
+                .ExecuteServerCommand<GetGroupResponse>("nibiruc fetch whitelisted");
+
+            if (response.Result is not null)
+            {
+                WhitelistedPlayerAutoCompleteProvider.UpdateWhitelistedPlayers(response.Result.Data);
+            }
+            else
+            {
+                _logger.LogWarning("Failed to sync whitelisted player data.");
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Caught an Exception {ExceptionName} when sync whitelisted player data.", e.GetBaseException().GetType().FullName ?? "Unknown");
+        }
     }
 }

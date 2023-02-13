@@ -65,7 +65,7 @@ public static class EmbedExtension
         return cer.BuildSuccessCommandEmbed(fields.ToArray());
     }
     
-    public static Embed BuildGetGroupEmbed(this CommandExecutionResult<GetGroupResponse> cer)
+    public static Embed BuildGetGroupEmbed(this CommandExecutionResult<GetGroupResponse> cer, string title)
     {
         var failed = cer.Result is null;
         if (failed)
@@ -73,8 +73,8 @@ public static class EmbedExtension
             return cer.BuildFailedCommandEmbed();
         }
 
-        var groups = string.Join("; ", cer.Result!.Groups);
-        return cer.BuildSuccessCommandEmbed(new EmbedField("Groups", groups));
+        var groups = string.Join("; ", cer.Result!.Data);
+        return cer.BuildSuccessCommandEmbed(new EmbedField(title, groups));
     }
 
     private static Embed BuildFailedCommandEmbed<T>(this CommandExecutionResult<T> cer)

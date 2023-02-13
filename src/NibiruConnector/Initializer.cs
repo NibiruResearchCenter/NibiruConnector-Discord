@@ -73,6 +73,7 @@ public static class Initializer
     public static IServiceCollection AddDiscordAutoCompleteProviders(this IServiceCollection services)
     {
         services.AddAutocompleteProvider<GroupsAutoCompleteProvider>();
+        services.AddAutocompleteProvider<WhitelistedPlayerAutoCompleteProvider>();
         
         return services;
     }

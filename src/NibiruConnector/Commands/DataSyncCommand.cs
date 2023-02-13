@@ -33,17 +33,34 @@ public sealed class DataSyncCommand : CommandGroup
     [Command("sync-groups")]
     [CommandType(ApplicationCommandType.ChatInput)]
     [Description("Manually sync groups.")]
-    public async Task<IResult> WhitelistAddAsync()
+    public async Task<IResult> SyncGroups()
     {
         var response = await _rconService
             .ExecuteServerCommand<GetGroupResponse>("nibiruc fetch groups");
         
         if (response.Result is not null)
         {
-            GroupsAutoCompleteProvider.UpdateGroups(response.Result.Groups.ToArray());
+            GroupsAutoCompleteProvider.UpdateGroups(response.Result.Data);
         }
         
-        var embed = response.BuildGetGroupEmbed();
+        var embed = response.BuildGetGroupEmbed("Groups");
+        return await _feedbackService.SendContextualEmbedAsync(embed);
+    }
+    
+    [Command("sync-whitelisted")]
+    [CommandType(ApplicationCommandType.ChatInput)]
+    [Description("Manually sync whitelisted players. A light version of whitelist-list")]
+    public async Task<IResult> SyncWhitelisted()
+    {
+        var response = await _rconService
+            .ExecuteServerCommand<GetGroupResponse>("nibiruc fetch whitelisted");
+        
+        if (response.Result is not null)
+        {
+            WhitelistedPlayerAutoCompleteProvider.UpdateWhitelistedPlayers(response.Result.Data);
+        }
+        
+        var embed = response.BuildGetGroupEmbed("Whitelisted Players");
         return await _feedbackService.SendContextualEmbedAsync(embed);
     }
 }

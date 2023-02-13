@@ -9,6 +9,6 @@ namespace NibiruConnector.Models;
 
 public record GetGroupResponse
 {
-    [JsonPropertyName("groups")]
-    public List<string> Groups { get; set; } = new();
+    [JsonPropertyName("data")]
+    public List<string> Data { get; set; } = new();
 }
