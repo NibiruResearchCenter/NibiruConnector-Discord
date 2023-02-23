@@ -20,7 +20,7 @@ public static class EmbedExtension
         }
 
         return cer.BuildSuccessCommandEmbed(
-            new EmbedField("Message", cer.Result!.Message));
+            new EmbedField("Message", cer.Result!.Message.GetPlainTextMarkdown()));
     }
 
     public static Embed BuildWhitelistListEmbed(this CommandExecutionResult<WhitelistListResponse> cer)
@@ -35,7 +35,7 @@ public static class EmbedExtension
                 from pg in cer.Result!.PlayerGroups
                 let playerString = string.Join("; ", pg.Players
                     .OrderBy(x => x.DaysSinceLastJoin)
-                    .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))
+                    .Select(x => $"`{x.PlayerName}` [{x.DaysSinceLastJoin}]"))
                 select new EmbedField($"Group: {pg.GroupName}", playerString)
             ).ToList();
         var allPlayers = cer.Result!.PlayerGroups
@@ -54,13 +54,13 @@ public static class EmbedExtension
         
         fields.Add(new EmbedField("[EXTRA] Never Join",
             string.Join("; ", neverJoin
-                .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))));
+                .Select(x => $"`{x.PlayerName}` [{x.DaysSinceLastJoin}]"))));
         fields.Add(new EmbedField("[EXTRA] Above 7 Days",
             string.Join("; ", above7Days
-                .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))));
+                .Select(x => $"`{x.PlayerName}` [{x.DaysSinceLastJoin}]"))));
         fields.Add(new EmbedField("[EXTRA] Above 30 Days",
             string.Join("; ", above30Days
-                .Select(x => $"{x.PlayerName} ({x.DaysSinceLastJoin})"))));
+                .Select(x => $"`{x.PlayerName}` [{x.DaysSinceLastJoin}]"))));
         
         return cer.BuildSuccessCommandEmbed(fields.ToArray());
     }
@@ -73,7 +73,7 @@ public static class EmbedExtension
             return cer.BuildFailedCommandEmbed();
         }
 
-        var groups = string.Join("; ", cer.Result!.Data);
+        var groups = string.Join("; ", $"`{cer.Result!.Data}`");
         return cer.BuildSuccessCommandEmbed(new EmbedField(title, groups));
     }
 
@@ -83,7 +83,7 @@ public static class EmbedExtension
         {
             Title = "Command result",
             Colour = Color.Red,
-            Description = $"Command: {cer.Command}",
+            Description = $"Command: `{cer.Command}`",
             Fields = new List<EmbedField>
             {
                 new("Result", "Failed"),
@@ -105,7 +105,7 @@ public static class EmbedExtension
         {
             Title = "Command Result",
             Colour = Color.Green,
-            Description = $"Command: {cer.Command}",
+            Description = $"Command: `{cer.Command}`",
             Fields = fields
         };
     }

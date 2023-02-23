@@ -16,4 +16,13 @@ public static partial class StringExtension
     {
         return MinecraftFormattingRegex().Replace(str, string.Empty);
     }
+
+    public static string GetPlainTextMarkdown(this string str)
+    {
+        return $"""
+                ```text
+                {str}
+                ```
+                """;
+    }
 }
