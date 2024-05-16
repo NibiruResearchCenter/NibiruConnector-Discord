@@ -17,8 +17,6 @@ public class DiscordLogger
 
     public async Task Log(string message, LogEventLevel level = LogEventLevel.Information)
     {
-        var time = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-        await _channel.SendMessageAsync(
-            $"`[{time}] [{level.ToShort()}]` {message}");
+        await _channel.Log(message, level);
     }
 }

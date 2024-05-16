@@ -1,6 +1,7 @@
 using Discord;
 using NibiruConnector.Exceptions;
 using NibiruConnector.Models;
+using Serilog.Events;
 
 namespace NibiruConnector.Extensions;
 
@@ -57,6 +58,13 @@ public static class DiscordMessageExtension
             default:
                 throw new UnknownStatusException(status);
         }
+    }
+
+    public static async Task Log(this IMessageChannel channel, string message, LogEventLevel level = LogEventLevel.Information)
+    {
+        var time = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+        await channel.SendMessageAsync(
+            $"`[{time}] [{level.ToShort()}]` {message}");
     }
 
     private static Embed BuildStatusChangedEmbed(string title, Color color, DateTimeOffset timestamp, string name, string tz, string localTime, string msg)

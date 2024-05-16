@@ -1,7 +1,5 @@
 using Discord;
 using Discord.WebSocket;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NibiruConnector.Extensions;
 
 namespace NibiruConnector.Services;
@@ -10,8 +8,11 @@ public class DiscordHostService : IHostedService
 {
     private readonly DiscordSocketClient _discordSocketClient;
     private readonly ILogger<DiscordHostService> _logger;
+    private IMessageChannel? _managementChannel;
 
-    public DiscordHostService(DiscordSocketClient discordSocketClient, ILogger<DiscordHostService> logger)
+    public DiscordHostService(
+        DiscordSocketClient discordSocketClient,
+        ILogger<DiscordHostService> logger)
     {
         _discordSocketClient = discordSocketClient;
         _logger = logger;
@@ -30,11 +31,18 @@ public class DiscordHostService : IHostedService
         };
 
         await _discordSocketClient.StartAsync();
+
+        _managementChannel = await _discordSocketClient.GetManagementChannel();
+        await _managementChannel.Log("Nibiru Connector online");
     }
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         await _discordSocketClient.StopAsync();
+        if (_managementChannel is not null)
+        {
+            await _managementChannel.Log("Nibiru Connector offline");
+        }
     }
 }
