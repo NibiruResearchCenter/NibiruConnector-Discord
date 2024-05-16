@@ -1,5 +1,4 @@
 using Discord;
-using Microsoft.Extensions.Logging;
 using Serilog.Events;
 
 namespace NibiruConnector.Extensions;

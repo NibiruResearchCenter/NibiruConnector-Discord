@@ -32,32 +32,15 @@ public static class DiscordMessageExtension
 
         var serviceName = data.Monitor?.GetProperty("name").GetString() ?? "Unknown";
 
-        switch (status)
+        return status switch
         {
             // DOWN
-            case 0:
-                return BuildStatusChangedEmbed(
-                    "❌ Server went down!",
-                    Color.Red,
-                    time,
-                    serviceName,
-                    tz,
-                    localTime,
-                    msg);
+            0 => BuildStatusChangedEmbed("❌ Server went down!", Color.Red, time, serviceName, tz, localTime, msg),
             // UP
-            case 1:
-                return BuildStatusChangedEmbed(
-                    "✅ Server is up!",
-                    Color.Green,
-                    time,
-                    serviceName,
-                    tz,
-                    localTime,
-                    msg);
+            1 => BuildStatusChangedEmbed("✅ Server is up!", Color.Green, time, serviceName, tz, localTime, msg),
             // UNKNOWN
-            default:
-                throw new UnknownStatusException(status);
-        }
+            _ => throw new UnknownStatusException(status)
+        };
     }
 
     public static async Task Log(this IMessageChannel channel, string message, LogEventLevel level = LogEventLevel.Information)
