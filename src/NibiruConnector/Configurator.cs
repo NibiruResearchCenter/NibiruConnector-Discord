@@ -38,6 +38,7 @@ public static class Configurator
             return new DiscordSocketConfig
             {
                 MessageCacheSize = 100,
+                GatewayIntents = GatewayIntents.None,
                 WebSocketProvider = DefaultWebSocketProvider.Create(webProxy),
                 RestClientProvider = DefaultRestClientProvider.Create(useProxy),
             };
