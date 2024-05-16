@@ -12,6 +12,7 @@ COPY --from=build /build/app /app
 WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://+:5000
+ENV DOTNET_ENV=Production
 
 EXPOSE 5000
 

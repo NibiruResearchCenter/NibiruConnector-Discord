@@ -105,6 +105,9 @@ public static class Configurator
         var level = Enum.Parse<LogEventLevel>(Configuration.LoggerLevel);
         loggerConfiguration.MinimumLevel.Is(level);
 
+        loggerConfiguration.MinimumLevel.Override("Microsoft", LogEventLevel.Warning);
+        loggerConfiguration.MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information);
+
         Log.Logger = loggerConfiguration.CreateLogger();
         loggingBuilder.ClearProviders();
         loggingBuilder.AddSerilog(Log.Logger);
