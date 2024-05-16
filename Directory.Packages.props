@@ -3,6 +3,9 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Discord.Net" Version="3.15.0" />
+    <PackageVersion Include="MassTransit" Version="8.2.2" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.1" />
   </ItemGroup>
 </Project>

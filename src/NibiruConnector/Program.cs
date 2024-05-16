@@ -1,7 +1,15 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using NibiruConnector;
 
-var builder = Host.CreateDefaultBuilder();
+var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddControllers();
+
+builder.Services.AddLogger();
+builder.Services.AddDiscord();
+builder.Services.AddLocalTransit();
 
 var app = builder.Build();
 
-app.Run();
+app.MapControllers();
+
+await app.RunAsync();
