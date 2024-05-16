@@ -6,6 +6,7 @@ using Discord.Net.WebSockets;
 using Discord.WebSocket;
 using MassTransit;
 using NibiruConnector.Extensions;
+using NibiruConnector.Middlewares;
 using NibiruConnector.Services;
 using Serilog;
 using Serilog.Events;
@@ -72,6 +73,13 @@ public static class Configurator
         });
 
         return services;
+    }
+
+    public static WebApplication UseApiKeyAuthentication(this WebApplication app)
+    {
+        app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
+
+        return app;
     }
 
     private const string LoggerOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";

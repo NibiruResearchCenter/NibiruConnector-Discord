@@ -10,6 +10,8 @@ builder.Services.AddLocalTransit();
 
 var app = builder.Build();
 
+app.UseApiKeyAuthentication();
+
 app.MapControllers();
 
 await app.RunAsync();

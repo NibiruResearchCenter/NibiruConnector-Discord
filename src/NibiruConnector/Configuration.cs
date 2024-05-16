@@ -17,6 +17,9 @@ public static class Configuration
     public static readonly string DiscordNotificationChannel = Environment
         .GetEnvironmentVariable("DISCORD_NOTIFICATION_CHANNEL") ?? "";
 
+    public static readonly string ApiKey = Environment
+        .GetEnvironmentVariable("API_KEY") ?? "";
+
     public static readonly string LoggerFileOutput = Environment
         .GetEnvironmentVariable("LOGGER_FILE_OUTPUT") ?? "";
 
