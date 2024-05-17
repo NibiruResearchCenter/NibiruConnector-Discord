@@ -12,4 +12,8 @@ public static class Configuration
 
     public static readonly string HttpsProxy = Environment
         .GetEnvironmentVariable("HTTPS_PROXY") ?? string.Empty;
+
+    public static readonly string NibiruConnectorVersion =
+        typeof(Configuration).Assembly.GetName().Version?.ToString(3)
+        ?? "0.0.0";
 }

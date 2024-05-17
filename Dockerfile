@@ -1,9 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
 
-COPY . /build
-WORKDIR /build
+ARG NIBIRU_CONNECTOR_VERSION=0.0.0
 
-RUN dotnet publish -c Release -o ./app
+COPY . /build
+WORKDIR /build/src/NibiruConnector
+
+RUN dotnet publish -c Release -o /build/app -p:Version=$NIBIRU_CONNECTOR_VERSION -p:ContinuousIntegrationBuild=true
 
 RUN rm -f ./app/appsettings.yaml
 

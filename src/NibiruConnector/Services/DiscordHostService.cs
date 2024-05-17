@@ -25,6 +25,8 @@ public class DiscordHostService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Nibiru Connector {Version} starting", Configuration.NibiruConnectorVersion);
+
         await _discordSocketClient.LoginAsync(TokenType.Bot, _options.Value.BotToken);
 
         _discordSocketClient.Log += msg =>
@@ -37,7 +39,7 @@ public class DiscordHostService : IHostedService
         await _discordSocketClient.StartAsync();
 
         _managementChannel = await _discordSocketClient.GetMessageChannel(_options.Value.ManagementChannel);
-        await _managementChannel.Log("Nibiru Connector online");
+        await _managementChannel.Log($"Nibiru Connector v{Configuration.NibiruConnectorVersion} online");
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
@@ -45,7 +47,7 @@ public class DiscordHostService : IHostedService
         await _discordSocketClient.StopAsync();
         if (_managementChannel is not null)
         {
-            await _managementChannel.Log("Nibiru Connector offline");
+            await _managementChannel.Log($"Nibiru Connector v{Configuration.NibiruConnectorVersion} offline");
         }
     }
 }
