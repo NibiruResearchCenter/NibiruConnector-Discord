@@ -5,14 +5,19 @@ WORKDIR /build
 
 RUN dotnet publish -c Release -o ./app
 
+RUN rm -f ./app/appsettings.yaml
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 COPY --from=build /build/app /app
 
+RUN mkdir /config
+
 WORKDIR /app
 
-ENV ASPNETCORE_URLS=http://+:5000
-ENV DOTNET_ENV=Production
+ENV ASPNETCORE_HTTP_PORTS=5000
+ENV RUNTIME_ENV=production
+ENV CONFIG_FILE=/config/appsettings.yaml
 
 EXPOSE 5000
 
