@@ -8,7 +8,7 @@ public static class Configuration
     public static IConfiguration Instance { get; set; } = null!;
 
     public static readonly string RuntimeEnvironment = Environment
-        .GetEnvironmentVariable("RUNTIME_ENV")?.ToLowerInvariant() ?? "production";
+        .GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.ToLowerInvariant() ?? "production";
 
     public static readonly string HttpsProxy = Environment
         .GetEnvironmentVariable("HTTPS_PROXY") ?? string.Empty;

@@ -16,7 +16,7 @@ RUN mkdir /config
 WORKDIR /app
 
 ENV ASPNETCORE_HTTP_PORTS=5000
-ENV RUNTIME_ENV=production
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENV CONFIG_FILE=/config/appsettings.yaml
 
 EXPOSE 5000
