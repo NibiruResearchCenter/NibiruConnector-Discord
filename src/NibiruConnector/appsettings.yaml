@@ -1,0 +1,18 @@
+logger:
+  level: Information
+  filePath: ""
+
+discord:
+  botToken: YOUR_BOT_TOKEN_HERE
+  guildId: 00000000000000000000
+  managementChannel: 00000000000000000000
+  notificationChannels:
+    - id: 00000000000000000000
+      ref: my-channel-1
+    - id: 00000000000000000000
+      ref: my-channel-2"
+
+api:
+  tokens:
+    - token: YOUR_SUPER_LONG_RANDOM_STRING
+      ref: my-api-token

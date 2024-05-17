@@ -513,4 +513,4 @@ $RECYCLE.BIN/
 .nuke/temp
 
 # Dev Config
-*.Development.json
+*.development.yaml

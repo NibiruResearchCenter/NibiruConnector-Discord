@@ -17,11 +17,25 @@ public class WebhookController : ControllerBase
     }
 
     [HttpPost("uptime-kuma")]
-    public async Task<IActionResult> ReceiveUptimeKumaWebhookAsync([FromBody] UptimeKumaWebhook body)
+    public async Task<IActionResult> ReceiveUptimeKumaWebhookAsync(
+        [FromBody] UptimeKumaWebhook body,
+        [FromQuery] string channels)
     {
+        if (string.IsNullOrEmpty(channels))
+        {
+            return BadRequest();
+        }
+
+        var refs = channels.Split(",");
+        if (refs.Length == 0)
+        {
+            return BadRequest();
+        }
+
         var contract = new UptimeKumaStatusUpdate
         {
-            Data = body
+            Data = body,
+            ChannelRefs = refs
         };
 
         await _publishEndpoint.Publish(contract);

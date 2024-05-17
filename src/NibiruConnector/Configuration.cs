@@ -2,34 +2,14 @@ namespace NibiruConnector;
 
 public static class Configuration
 {
+    public static readonly string ConfigurationFilePath = Environment
+        .GetEnvironmentVariable("CONFIG_FILE") ?? "appsettings.yaml";
+
+    public static IConfiguration Instance { get; set; } = null!;
+
     public static readonly string RuntimeEnvironment = Environment
-        .GetEnvironmentVariable("DOTNET_ENV") ?? "Development";
+        .GetEnvironmentVariable("RUNTIME_ENV")?.ToLowerInvariant() ?? "production";
 
     public static readonly string HttpsProxy = Environment
-        .GetEnvironmentVariable("HTTPS_PROXY") ?? "";
-
-    public static readonly string DiscordBotToken = Environment
-        .GetEnvironmentVariable("DISCORD_BOT_TOKEN") ?? "";
-
-    public static readonly string DiscordManagementChannel = Environment
-        .GetEnvironmentVariable("DISCORD_MANAGEMENT_CHANNEL") ?? "";
-
-    public static readonly string DiscordNotificationChannel = Environment
-        .GetEnvironmentVariable("DISCORD_NOTIFICATION_CHANNEL") ?? "";
-
-    public static readonly string ApiKey = Environment
-        .GetEnvironmentVariable("API_KEY") ?? "";
-
-    public static readonly string LoggerFileOutput = Environment
-        .GetEnvironmentVariable("LOGGER_FILE_OUTPUT") ?? "";
-
-    public static readonly string LoggerLevel = Environment
-        .GetEnvironmentVariable("LOGGER_LEVEL")
-        ?? (RuntimeEnvironment == "Development" ? "Debug" : "Information");
-
-    public static readonly ulong DiscordManagementChannelId = ulong.Parse(DiscordManagementChannel);
-    public static readonly ulong DiscordNotificationChannelId = ulong.Parse(DiscordNotificationChannel);
-
-    public const string ManagementChannelKey = "Management";
-    public const string NotificationChannelKey = "Notification";
+        .GetEnvironmentVariable("HTTPS_PROXY") ?? string.Empty;
 }

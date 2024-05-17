@@ -5,8 +5,8 @@ using Discord.Net.Rest;
 using Discord.Net.WebSockets;
 using Discord.WebSocket;
 using MassTransit;
-using NibiruConnector.Extensions;
 using NibiruConnector.Middlewares;
+using NibiruConnector.Options;
 using NibiruConnector.Services;
 using Serilog;
 using Serilog.Events;
@@ -15,6 +15,24 @@ namespace NibiruConnector;
 
 public static class Configurator
 {
+    public static IConfigurationBuilder AddConfiguration(this IConfigurationBuilder builder)
+    {
+        var cfg = new ConfigurationBuilder();
+
+        cfg.AddYamlFile(Configuration.ConfigurationFilePath, false);
+
+        if (Configuration.RuntimeEnvironment is not "production")
+        {
+            cfg.AddYamlFile($"appsettings.{Configuration.RuntimeEnvironment}.yaml", true);
+        }
+
+        Configuration.Instance = cfg.Build();
+
+        builder.AddConfiguration(Configuration.Instance);
+
+        return builder;
+    }
+
     public static IServiceCollection AddLogger(this IServiceCollection services)
     {
         services.AddLogging(builder =>
@@ -45,24 +63,12 @@ public static class Configurator
         });
         services.AddSingleton<DiscordSocketClient>();
         services.AddHostedService<DiscordHostService>();
-
-        services.AddKeyedSingleton<IMessageChannel>("Notification", (sp, _) =>
-        {
-            var discordSocketClient = sp.GetRequiredService<DiscordSocketClient>();
-            return discordSocketClient.GetNotificationChannel().GetAwaiter().GetResult();
-        });
-        services.AddKeyedSingleton<IMessageChannel>("Management", (sp, _) =>
-        {
-            var discordSocketClient = sp.GetRequiredService<DiscordSocketClient>();
-            return discordSocketClient.GetManagementChannel().GetAwaiter().GetResult();
-        });
-
         services.AddSingleton<DiscordLogger>();
 
         return services;
     }
 
-    public static IServiceCollection AddLocalTransit(this IServiceCollection services)
+    public static IServiceCollection AddConnectorTransit(this IServiceCollection services)
     {
         services.AddMassTransit(c =>
         {
@@ -72,6 +78,15 @@ public static class Configurator
                 cfg.ConfigureEndpoints(ctx);
             });
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddConnectorOptions(this IServiceCollection services)
+    {
+        services.AddOptions<LoggerOptions>().BindConfiguration("logger");
+        services.AddOptions<DiscordOptions>().BindConfiguration("discord");
+        services.AddOptions<ApiOptions>().BindConfiguration("api");
 
         return services;
     }
@@ -87,24 +102,24 @@ public static class Configurator
 
     private static void ConfigureLogger(this ILoggingBuilder loggingBuilder)
     {
+        var loggerOptions = Configuration.Instance.GetValue<LoggerOptions>("logger") ?? new LoggerOptions();
+
         var loggerConfiguration = new LoggerConfiguration();
 
         loggerConfiguration.WriteTo.Console(
             outputTemplate: LoggerOutputTemplate,
             formatProvider: CultureInfo.InvariantCulture);
 
-        var fileOutput = Configuration.LoggerFileOutput;
-        if (string.IsNullOrEmpty(fileOutput) is false)
+        if (string.IsNullOrEmpty(loggerOptions.FilePath) is false)
         {
             loggerConfiguration.WriteTo.File(
                 outputTemplate: LoggerOutputTemplate,
-                path: fileOutput,
+                path: loggerOptions.FilePath,
                 rollingInterval: RollingInterval.Day,
                 formatProvider: CultureInfo.InvariantCulture);
         }
 
-        var level = Enum.Parse<LogEventLevel>(Configuration.LoggerLevel);
-        loggerConfiguration.MinimumLevel.Is(level);
+        loggerConfiguration.MinimumLevel.Is(loggerOptions.Level);
 
         loggerConfiguration.MinimumLevel.Override("Microsoft", LogEventLevel.Warning);
         loggerConfiguration.MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information);
